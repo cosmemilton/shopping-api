@@ -1,0 +1,174 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id  @db.Uuid
+  email     String   @unique
+  name      String
+  username  String   @unique
+  hashedPassword  String @map("hashed_password")
+  createdAt DateTime @default(now())   @map("created_at")
+  updatedAt DateTime @updatedAt        @map("updated_at")
+  @@map("users")
+}
+
+model Client {
+  id        String      @id @db.Uuid
+  name      String
+  email     String      @unique
+  document  String
+  phone     String
+  username  String      @unique
+  hashedPassword  String @map("hashed_password")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+  addresses ClientAddress[]
+  creditCardTokens ClientCreditCardToken[]
+  orders    Order[]
+
+  @@map("clients")
+}
+
+model ClientAddress {
+  id          String      @id @db.Uuid
+  clientId    String      @map("client_id")    @db.Uuid
+  address     String
+  number      String
+  complement  String
+  city        String
+  state       String
+  zipCode     String       @map("zip_code")
+  type        AddressType  @default(SHIPPING)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt      @map("updated_at")
+  client      Client   @relation(fields: [clientId], references: [id])
+  @@map("client_addresses")
+}
+
+model ClientCreditCardToken {
+  id          String      @id @db.Uuid
+  clientId    String      @map("client_id")   @db.Uuid
+  token       String
+  alias       String
+  prefix      String?
+  lastDigits  String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt      @map("updated_at")
+  client      Client @relation(fields: [clientId], references: [id])
+  @@map("client_credit_card_tokens")
+}
+
+model Category {
+  id          String      @id @db.Uuid  
+  name        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt      @map("updated_at")
+  products    Product[]
+  @@map("categories")
+}
+
+model Product {
+  id          String     @id @db.Uuid
+  categoryId  String     @db.Uuid @map("category_id")
+  name        String
+  description String
+  price       Float
+  image       String
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  category    Category   @relation(fields: [categoryId], references: [id])
+  orders      OrderItem[]
+  @@map("products")
+}
+
+model Order {
+  id          String      @id @db.Uuid
+  clientId    String      @db.Uuid @map("client_id")
+  total       Float
+  status      OrderStatus
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  client      Client @relation(fields: [clientId], references: [id])
+  items       OrderItem[]
+  payments    OrderPayment[]
+  shippings   OrderShipping[]
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String      @id @db.Uuid
+  orderId     String      @db.Uuid @map("order_id")
+  productId   String      @db.Uuid @map("product_id")
+  quantity    Int
+  price       Float
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt      @map("updated_at")
+  order       Order       @relation(fields: [orderId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+  @@map("order_items")
+}
+
+model OrderPayment {
+  id          String      @id @db.Uuid
+  orderId     String      @db.Uuid @map("order_id")
+  total       Float
+  paymentMethod PaymentMethod               @map("payment_method")
+  createdAt   DateTime    @default(now())   @map("created_at")
+  updatedAt   DateTime    @updatedAt        @map("updated_at")
+  order       Order       @relation(fields: [orderId], references: [id])
+  @@map("order_payments")
+}
+
+model OrderShipping {
+  id          String      @id  @db.Uuid
+  orderId     String      @db.Uuid @map("order_id")
+  address     String
+  number      String
+  complement  String
+  city        String
+  state       String
+  zipCode     String    @map("zip_code")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt      @map("updated_at")
+  order       Order     @relation(fields: [orderId], references: [id])
+  @@map("order_shippings")
+}
+
+enum OrderStatus {
+  CANCELLED
+  PENDING
+  PROCESSING
+  AWAITING_PAYMENT
+  APPROVED
+  BILLING
+  SHIPPED
+  COMPLETED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  BOLETO
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+}
+
+
+
