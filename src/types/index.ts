@@ -153,6 +153,20 @@ export interface TokenPaymentBodyRequest {
     };
 }
 
+export type CardPaymentBodyRequest = {
+    merchant_usn: string;
+    order_id: string;
+    installments: string;
+    installment_type: string;
+    authorizer_id: string;
+    amount: string;
+    card: {
+      expiry_date: string;
+      security_code: string;
+      number: string;
+    };
+  };
+
 export interface TokenPaymentResponse {
     code: string;
     message: string;
@@ -182,3 +196,32 @@ export interface TokenPaymentResponse {
         recurrency_tid: string;
     };
 }
+
+export type CardPaymentResponse = {
+    code: string;
+    message: string;
+    payment: {
+      authorizer_code: string;
+      authorizer_message: string;
+      status: string;
+      nit: string;
+      order_id: string;
+      customer_receipt: string;
+      merchant_receipt: string;
+      authorizer_id: string;
+      acquirer_id: string;
+      acquirer_name: string;
+      authorizer_date: string;
+      authorization_number: string;
+      merchant_usn: string;
+      esitef_usn: string;
+      sitef_usn: string;
+      host_usn: string;
+      amount: string;
+      payment_type: string;
+      issuer: string;
+      authorizer_merchant_id: string;
+      terminal_id: string;
+      payment_date: string;
+    };
+  };
