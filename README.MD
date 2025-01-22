@@ -2,7 +2,7 @@
 
 ## Apresentação
 
-Este projeto é uma API para e-commerce, desenvolvida com o objetivo de compor um portfólio pessoal e demonstrar habilidades técnicas para recrutadores. A API foi construída utilizando tecnologias modernas e robustas, como PostgreSQL, Express.js, Prisma ORM, routing-controllers, e integração com eSitef para pagamentos via PIX, cartão de crédito e débito.
+Este projeto é uma API para e-commerce, desenvolvida com o objetivo de compor um portfólio pessoal. A API foi construída utilizando tecnologias modernas e robustas, como PostgreSQL, Express.js, Prisma ORM, routing-controllers, e integração com eSitef para pagamentos via PIX, cartão de crédito e débito.
 
 ## Tecnologias Utilizadas
 
